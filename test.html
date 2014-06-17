@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Personal Twitter</title>
+  </head>
+  <body onload="getLocalStorage()">
+    <input type="text" id="tweetbox">
+    <button onclick="setLocalStorage()">트윗하기</button>
+    <button onclick="clearLocalStorage()">삭제</button>
+    <hr>
+	    <ul id="tweets">
+	    </ul>
+	    <script type="text/javascript">
+		    function getLocalStorage()
+		    {
+			    for( i=0; i<localStorage.length; i++)
+			    {
+			    	var key = localStorage.key(i);
+			    	var now = new Date(key);
+					var li=document.createElement("li");
+			    	li.innerHTML=localStorage.getItem(key)+ "</br>" + printTime(now);
+			    	document.getElementById('tweets').insertBefore(li, document.getElementById('tweets').firstChild); 
+				} 
+		    }
+
+	      function setLocalStorage(){
+		      var now = new Date(); 
+		      var text = document.getElementById('tweetbox').value;
+		      localStorage.setItem(now.toString(), text);
+		      var li=document.createElement("li");
+		      li.innerHTML = text + "</br>" + printTime(now);
+		      document.getElementById('tweets').insertBefore(li, document.getElementById('tweets').firstChild);
+	      }
+		  	
+		  	
+		  function printTime(now) {
+			  var current = new Date();
+			  var gap;
+			  console.log(current - now);
+			  //1분미만
+			  if( current - now < 60000 )
+			  {
+				  gap = ' (방금 전)';
+			  }
+			  else if( current - now >= 60000 && current - now < 3600000 )
+			  {
+				  gap = ' (' + Math.ceil((current - now)/60000)+'분전)';
+			  }
+			  else if( current - now >= 3600000 && current - now < 216000000  )
+			  {
+				  gap = ' (' + Math.floor((current - now)/3600000)+'시간전)';
+			  }
+			  else 
+			  {
+				  gap = now.getFullYear() + "년 " + (now.getMonth()+1) + "월 " + now.getDate() + "일 ";
+			  }
+
+			  return gap;
+		  }
+		  
+		  
+	      function clearLocalStorage(){
+		      localStorage.clear();
+		      document.getElementById('tweets').innerHTML = null;
+	      }
+	    </script>
+  </body>
+</html>
