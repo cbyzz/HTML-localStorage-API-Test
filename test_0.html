@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <meta charset='utf-8'>
+    <meta http-equiv='refresh' content='60'>
+    <title>Personal Twitter</title>
+  </head>
+  <body onload='getLocalStorage()'>
+    <input type='text' id='tweetbox' maxlength='140'>
+    <button onclick='setLocalStorage()'>트윗하기</button>
+    <button onclick='clearLocalStorage()'>삭제</button>
+    <hr>
+		<ul id='tweets'>
+	    </ul>
+	    <script type='text/javascript'>
+		function getLocalStorage() {
+			for( i = 0; i < localStorage.length; i++) {
+				var key = localStorage.key(i);
+				var jsonString = localStorage.getItem(key);
+				var tweet = JSON.parse(jsonString);
+				printTweet(tweet.created_at, tweet.text);
+			} 
+		}
+
+		function setLocalStorage() {
+			var date = new Date();
+		    var text = document.getElementById('tweetbox').value;
+		    var tweet = {
+				created_at : date.getTime(),
+			    text: text,
+			};
+			var jsonString = JSON.stringify(tweet);
+			localStorage.setItem(localStorage.length, jsonString);
+			printTweet(tweet.created_at, tweet.text);
+			document.getElementById('tweetbox').value = '';
+		}
+		  	
+		function printTweet(created_at, text) {
+			var li = document.createElement('li');		  
+			li.innerHTML = text + '<br/><i>' + getTimeStamp(created_at) +'</i>';
+		    document.getElementById('tweets').insertBefore(li, document.getElementById('tweets').firstChild);			  
+		}	
+
+		function getTimeStamp(created_at) {
+			var date = new Date(created_at);
+		  	return date.getFullYear() + '년 ' 
+		  		+ (date.getMonth() + 1) + '월 ' 
+		  		+ date.getDate() + '일 '
+		  		+ date.getHours() + '시 '
+		  		+ date.getMinutes() + '분 '
+		  		+ date.getSeconds() + '초 ';		  				  		
+		}
+		  
+	    function clearLocalStorage(){
+		    localStorage.clear();
+			document.getElementById('tweets').innerHTML = '';
+		}
+	</script>
+</body>
+</html>

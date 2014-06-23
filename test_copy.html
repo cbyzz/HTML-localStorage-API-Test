@@ -3,10 +3,11 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="refresh" content="60" >
     <title>Personal Twitter</title>
   </head>
   <body onload="getLocalStorage()">
-    <input type="text" id="tweetbox">
+    <input type="text" id="tweetbox" maxlength="140">
     <button onclick="setLocalStorage()">트윗하기</button>
     <button onclick="clearLocalStorage()">삭제</button>
     <hr>
@@ -17,24 +18,34 @@
 		    {
 			    for( i=0; i<localStorage.length; i++)
 			    {
-			    	var key = localStorage.key(i);
-			    	var now = new Date(key);
 					var li=document.createElement("li");
-			    	li.innerHTML=localStorage.getItem(key)+ "</br>" + printTime(now);
-			    	document.getElementById('tweets').insertBefore(li, document.getElementById('tweets').firstChild); 
+					var jsontext = localStorage.getItem(i);
+					var contact = JSON.parse(jsontext);
+					var time = new Date(contact.key);
+					console.log(contact.value);
+			    	li.innerHTML = contact.value + "<br/>" + printTime(time);
+					document.getElementById('tweets').insertBefore(li, document.getElementById('tweets').firstChild);
 				} 
 		    }
 
 	      function setLocalStorage(){
-		      var now = new Date(); 
+		      var date = new Date();
 		      var text = document.getElementById('tweetbox').value;
-		      localStorage.setItem(now.toString(), text);
+		      text = text.replace(/'/g, "");
+		      text = text.replace(/"/g, "");
+		      var jsontext = '{"key":"'+date+'","value":"'+text+'"}';
+		      var contact = JSON.parse(jsontext);
+		      console.log(contact.key);
+		      console.log(contact.value);
+		      localStorage.setItem(localStorage.length,jsontext);
 		      var li=document.createElement("li");
-		      li.innerHTML = text + "</br>" + printTime(now);
+		      var now = new Date(contact.key);
+		      li.innerHTML = contact.value + "<br/>" + printTime(date);
 		      document.getElementById('tweets').insertBefore(li, document.getElementById('tweets').firstChild);
 	      }
 		  	
 		  	
+
 		  function printTime(now) {
 			  var current = new Date();
 			  var gap;
@@ -44,11 +55,11 @@
 			  {
 				  gap = ' (방금 전)';
 			  }
-			  else if( current - now >= 60000 && current - now < 3600000 )
+			  else if( current - now < 3600000 )
 			  {
 				  gap = ' (' + Math.ceil((current - now)/60000)+'분전)';
 			  }
-			  else if( current - now >= 3600000 && current - now < 21600000  )
+			  else if(  current - now < 21600000  )
 			  {
 				  gap = ' (' + Math.floor((current - now)/3600000)+'시간전)';
 			  }
@@ -59,6 +70,7 @@
 
 			  return gap;
 		  }
+
 		  
 		  
 	      function clearLocalStorage(){
