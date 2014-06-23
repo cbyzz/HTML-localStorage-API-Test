@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<!--     <meta http-equiv="refresh" content="10" > -->
+    <title>Personal Twitter</title>
+  </head>
+  <body onload="getLocalStorage()">
+<!--   <form method="get" onsubmit="return test();"> -->
+    <input type="text" id="tweetbox" name="value" onkeydown="if (event.keyCode == 13) setLocalStorage()" >
+    <button onclick="setLocalStorage()">트윗하기</button>
+    <button onclick="clearLocalStorage()">삭제</button>
+    <hr>
+	    <ul id="tweets">
+	    	<script>
+    // 디비에 쌓여있는 데이터를 불러 오는 함수
+            function getLocalStorage() {
+            console.log('sadfa');
+    // ajax
+	            var xhr = new XMLHttpRequest();
+    // 호출방식, url 
+	            xhr.open('get', 'http://nbt.cashslide.co.kr/HTML/test.php');
+	            xhr.onreadystatechange = function(){
+	            	if(xhr.readyState === 4) {
+	            		if(xhr.status === 200) {
+/* 	            			alert(xhr.responseText); */
+	            			
+	            			
+   							// 받은 텍스트를 JSON 으로 파싱
+	            			var contact = JSON.parse(xhr.responseText);
+	            			// html 초기화
+	            			document.getElementById('tweets').innerHTML = null;
+	            			// JSON 어레이 크기 만큼 포문을 돌림
+	            			for(i=0; i<contact.length; i++) {
+	            				// html  li  코드로 생성
+		            			var li=document.createElement("li");
+		            			// 디비에 저장되있는 시간값을 밀리세큰으로 바꾸기
+		            			var time = new Date(contact[i].time);
+		            			// 디비의 value 값과 시간 계산후 출력
+		            			li.innerHTML = contact[i].value + "<br/>" + printTime(time);
+		            			// tweets 의 맨 첫번째 데이터 위에 데이터를 추가 
+		            			document.getElementById('tweets').insertBefore(li, document.getElementById('tweets').firstChild);
+		            		}
+	            			
+	            		} else{
+							alert('Error: '+xhr.status);
+						}
+	            	}
+	            }
+	            
+	            xhr.send(null);
+            }
+            
+            // 디비에 저장하는 함수
+            function setLocalStorage() {
+            	// text1 변수에 텍스트 입력값 받아오기
+	            var text1 = document.getElementById('tweetbox').value;
+				console.log(text1);
+				if(text1 != '') {
+					var now = new Date(); 
+					var string = 'http://nbt.cashslide.co.kr/HTML/test1.php?value='+text1;
+		            var xhr = new XMLHttpRequest();
+		            xhr.open('GET', string);
+		            
+			            xhr.onreadystatechange = function(){
+			            	if(xhr.readyState === 4) {
+			            		if(xhr.status === 200) {
+								            		/*
+var li=document.createElement("li");
+													li.innerHTML = text1 + "</br>" + printTime(now);
+													document.getElementById('tweets').insertBefore(li, document.getElementById('tweets').firstChild);
+*/
+														// 초기화										
+														document.getElementById('tweetbox').value = '';
+														// 저장되있는 디비 다시 받아오기
+														getLocalStorage();
+									        		} 
+									       else{
+									alert('Error: '+xhr.status);
+								}
+			            	}
+			            }
+			            xhr.send(null);
+		           }
+		           else {
+			           alert('텍스트를 입력해주세요');
+		           }
+	            
+            }
+            
+            
+            
+            
+            function printTime(now) {
+			  var current = new Date();
+			  var gap;
+			  console.log(current - now);
+			  var time = current - now;
+			  //1분미만
+			  if( time < 5000 )
+			  {
+				  gap = ' (방금 전)';
+			  }
+			  else if ( time < 60000)
+			  {
+				  gap = ' (' +Math.ceil(time / 1000) + '초전)';
+			  }
+			  else if( time < 3600000 )
+			  {
+				  gap = ' (' + Math.ceil(time/60000)+'분전)';
+			  }
+			  else if( time < 21600000  )
+			  {
+				  gap = ' (' + Math.floor(time/3600000)+'시간전)';
+			  }
+			  else 
+			  {
+				  gap = now.getFullYear() + "년 " + (now.getMonth()+1) + "월 " + now.getDate() + "일 ";
+			  }
+
+			  return gap;
+		  }
+            
+          
+          
+          function clearLocalStorage(){
+			  var xhr = new XMLHttpRequest();
+	            xhr.open('get', 'http://nbt.cashslide.co.kr/HTML/test2.php');
+			  xhr.onreadystatechange = function(){
+	            	if(xhr.readyState === 4) {
+	            		if(xhr.status === 200) {
+	            			
+
+	            			
+	            		} else{
+							alert('Error: '+xhr.status);
+						}
+	            	}
+	            }
+	            
+	            xhr.send(null);
+				document.getElementById('tweets').innerHTML = null;
+	      }
+	            
+            setInterval(getLocalStorage, 1000);
+		  	
+        </script>
+	    </ul>
+  </body>
+</html>
